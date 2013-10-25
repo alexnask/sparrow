@@ -4,20 +4,21 @@ sparrow
 What is sparrow?
 ----------------
 
-Sparrow is a multiplatform GUI framework written in ooc, for use in ooc.
-It can either work on top of the default Win32 widget toolkit or use OpenGL on top of the Win32 API, XLib or Wayland.
-The purpose of sparrow is to provide an easy to use, ooc style way of doing things, without an absurd amount of hacks.
+Sparrow is a multiplatform GUI framework written in ooc, for use in ooc.  
+It can either work on top of the default Win32 widget toolkit or use OpenGL on top of the Win32 API, XLib or Wayland.  
+The purpose of sparrow is to provide an easy to use, ooc style way of doing things, without an absurd amount of hacks.  
 
 Why use sparrow?
 ----------------
 
-I think a better question is "Why not 'just' bind GTK+, or even a C++ library like Qt and wxWidgets?".
-Well, there are actually a few reasons, so allow me to list some below.
+I think a better question is "Why not 'just' bind GTK+, or even a C++ library like Qt and wxWidgets?".  
+Well, there are actually a few reasons, so allow me to list some below.  
 
-- Various problems with the memory model and type system: Basically, we would need a lot of hacks to bind the entirety of one of those libs and make it use the ooc garbage collector and type system without it feeling un-natural.
-- Inability to bind C++ libraries: It is mostly impossible to bind C++ libraries in ooc, unless they use a very specific subset of C++. Even in that case, tricks like a C bridge or dynamic loading are needed and those have their issues, like the non-standard C++ name mangling and/or templates, multiple inheritance etc...
+- Various problems with the memory model and type system: Basically, we would need a lot of hacks to bind the entirety of one of those libs and make it use the ooc garbage collector and type system without it feeling un-natural.  
+- Inability to bind C++ libraries: It is mostly impossible to bind C++ libraries in ooc, unless they use a very specific subset of C++. Even in that case, tricks like a C bridge or dynamic loading are needed and those have their issues,
+  like the non-standard C++ name mangling and/or templates, multiple inheritance etc...
 
-Here are some additional reasons to use sparrow, in case you are not convinced
+Here are some additional reasons to use sparrow, in case you are not convinced  
 
 - Sparrow is mostly pure ooc.
 - Sparrow uses the ooc SDK.
@@ -30,7 +31,7 @@ Here are some additional reasons to use sparrow, in case you are not convinced
 Example
 -------
 
-Here are some simple examples of the way I envision Sparrow working
+Here are some simple examples of the way I envision Sparrow working  
 
 ```ooc
 use sparrow
