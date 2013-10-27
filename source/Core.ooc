@@ -1,6 +1,6 @@
 import structs/ArrayList
 import threading/Thread
-import Widget, EventHandler, Painter, Style
+import Widget, Window, EventHandler, Painter, Style
 
 Sparrow: class {
     _topWidgets := static ArrayList<Widget> new()
@@ -10,7 +10,7 @@ Sparrow: class {
     style := static Style platformDefault()
 
     init: static func(args: ArrayList<String>) {
-        // Nothing to do here for now
+        // Nothing to do with args here for now
         focus = null
         // Add event thread and paint thread
         threads add(Thread new(||
@@ -40,7 +40,24 @@ Sparrow: class {
         // We give the focus to one of the top widgets then just look upon them as they fight for the focus
         focus = _topWidgets first()
 
-        while(focus) {
+        // If we get a widget that is not a Window, wrap it in!
+        if(!focus instaceOf?(Window)) {
+            _topWidgets removeAt(0)
+            (w, h) := focus getSize()
+            focus = Window new("Sparrow", focus, w, h)
+            _topWidgets add(focus)
+        }
+
+        while(focus || !_topWidgets empty?()) {
+            if(!focus) {
+                focus = _topWidgets first()
+                if(!focus instaceOf?(Window)) {
+                    _topWidgets removeAt(0)
+                    (w, h) := focus getSize()
+                    focus = Window new("Sparrow", focus, w, h)
+                    _topWidgets add(focus)
+                }
+
             for(thread in threads) {
                 thread start()
             }
