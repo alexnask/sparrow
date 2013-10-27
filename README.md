@@ -36,72 +36,72 @@ Here are some simple examples of the way I envision Sparrow working
 ```ooc
 use sparrow
 import structs/ArrayList
-import sparrow/[Window, Button]
+import sparrow/[Core, Window, Button]
 
 main: func(args: ArrayList<String>) -> Int {
-	Sparrow init(args)
+    Sparrow init(args)
 
-	win := Window new("Test", 720, 606)
-	button := Button new("Close", 200, 50) // Size is optional, will otherwise stretch
+    win := Window new("Test", 720, 606)
+    button := Button new("Close", 200, 50) // Size is optional, will otherwise stretch
 
-	// onClick(f) == callback("click", |evt| f())
-	button setPosition(260, 278) . onClick(||
-		win close()
-	)
+    // onClick(f) == callback("click", |evt| f())
+    button setPosition(260, 278) . onClick(||
+        win close()
+    )
 
-	win addChild(button) . show()
+    win addChild(button) . show()
 
-	Sparrow loop()
+    Sparrow loop()
 }
 ```
-
+  
 ```ooc
 use sparrow
 import structs/ArrayList
 // There also is sparrow/GUI which imports everything for convenience
-import sparrow/[Window, Style, TextEdit, Button, VBox]
+import sparrow/[Core, Window, Style, TextEdit, Button, VBox]
 
 main: func(args: ArrayList<String>) -> Int {
-	Sparrow init(args)
+    Sparrow init(args)
 
-	// Style is an object describing the esthetics of our widgets
-	// You can make your own or use existing ones
-	Sparrow style = Style Dark
+    // Style is an object describing the esthetics of our widgets
+    // You can make your own or use existing ones
+    Sparrow style = Style Dark
 
-	win := Window new("Style test", 720, 606)
+    win := Window new("Style test", 720, 606)
 
-	// Vertical box
-	vBox := VBox new()
-	// Space between elemnts will be 20 pixels
-	vBox setSpacing(20)
-	vBox setPosition(100, 150)
+    // Vertical box
+    vBox := VBox new()
+    // Space between elemnts will be 20 pixels
+    vBox setSpacing(20)
+    vBox setPosition(100, 150)
 
-	win addChild(vBox)
+    win addChild(vBox)
 
-	// percent is a property that casts 'this' to Percentage
-	// If you pass percentages, then relative sizes are used (orly?!?!?), so the actual absolute sizes are re-calculated each time the parent is resized or we change parents through events
-	textEdit := TextEdit new(80 percent, 50 percent)
+    // percent is a property that casts 'this' to Percentage
+    // If you pass percentages, then relative sizes are used (orly?!?!?), so the actual absolute sizes are re-calculated each time the parent is resized or we change parents through events
+    textEdit := TextEdit new(80 percent, 50 percent)
 
-	textEdit callback("keyTyped", |e|
-		match (e as TypedKeyEvent keyCode) {
-			case Key Right => "Pressed right key in text edit" println()
-			case Key Tab => "Getting back focus because we are arseholes :P" println(); Sparrow focus = textEdit
-			case Key Backspace => "New length: #{textEdit value length}" println()
-			case => // Flow through!
-		}
-	)
+    textEdit callback("keyTyped", |e|
+        match (e as TypedKeyEvent keyCode) {
+            case Key Right => "Pressed right key in text edit" println()
+            case Key Tab => "Getting back focus because we are arseholes :P" println(); Sparrow focus = textEdit
+            case Key Backspace => "New length: #{textEdit value length}" println()
+            case => // Flow through!
+        }
+    )
 
-	// The button will have a fixed size even if the window (and thus VBox) is resized, while the TextEdit will scale up
-	button := Button new("Submit!", 200, 50)
+    // The button will have a fixed size even if the window (and thus VBox) is resized, while the TextEdit will scale up
+    button := Button new("Submit!", 200, 50)
 
-	button onClick(||
-		textEdit value println()
-	)
+    button onClick(||
+        textEdit value println()
+    )
 
-	vBox addChild(textEdit) . addChild(button)
+    vBox addChild(textEdit) . addChild(button)
 
-	win addChild(vBox) . show()
+    win show()
 
-	Sparrow loop()
+    Sparrow loop()
 }
 ```
