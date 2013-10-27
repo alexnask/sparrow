@@ -1,6 +1,6 @@
 import structs/ArrayList
 import threading/Thread
-import Widget, Window, EventHandler, Painter, Style
+import Widget, Window, Event, EventHandler, Painter, Style
 
 Sparrow: class {
     _topWidgets := static ArrayList<Widget> new()
@@ -8,6 +8,8 @@ Sparrow: class {
     // For now, focus on the OpenGL painter rather than native rendering
     painter := static Painter new()
     style := static Style platformDefault()
+
+    _run? := true
 
     init: static func(args: ArrayList<String>) {
         // Nothing to do with args here for now
@@ -20,7 +22,7 @@ Sparrow: class {
         thread add(Thread new(||
             // TODO: Make painter only redraw what is needed
             for(topW in _topWidgets) {
-                topW paint(painter)
+                painter paint(topW)
             }
         ))
     }
@@ -37,26 +39,31 @@ Sparrow: class {
     threads := static ArrayList<Thread> new()
 
     loop: static func -> Int {
-        // We give the focus to one of the top widgets then just look upon them as they fight for the focus
-        focus = _topWidgets first()
 
-        // If we get a widget that is not a Window, wrap it in!
-        if(!focus instaceOf?(Window)) {
-            _topWidgets removeAt(0)
-            (w, h) := focus getSize()
-            focus = Window new("Sparrow", focus, w, h)
-            _topWidgets add(focus)
+        // Make a window out of a widget (only way to show it if it is a top level widget)
+        windowIze := func(widget: Widget) -> Window {
+            (w, h) := widget getSize()
+            widget = Window new("Sparrow", widget, w, h)
+            widget
         }
 
-        while(focus || !_topWidgets empty?()) {
+        // Pops a top widget and makes a window out of it if needed
+        pop := func -> Window {
+            widget := _topWidgets first() as Window
+            if(!widget instaceOf?(Window)) {
+                widget = windowIze(w)
+                _topWidgets[0] = widget
+            }
+            widget
+        }
+
+        // We give the focus to one of the top widgets then just look upon them as they fight for the focus
+        focus = pop()
+
+        while(_run? && (focus || !_topWidgets empty?())) {
             if(!focus) {
-                focus = _topWidgets first()
-                if(!focus instaceOf?(Window)) {
-                    _topWidgets removeAt(0)
-                    (w, h) := focus getSize()
-                    focus = Window new("Sparrow", focus, w, h)
-                    _topWidgets add(focus)
-                }
+                focus = pop()
+            }
 
             for(thread in threads) {
                 thread start()
@@ -67,5 +74,27 @@ Sparrow: class {
             }
         }
         0
+    }
+
+    // Sends a global signal to all widgets (don't ask me why, just throught it would be nice :P)
+    globalSignal: func(name: String, e: Event) {
+        for(topW in _topWidgets) {
+            topW signalChildren(name, e, false)
+        }
+    }
+
+    // Forces sparrow to end its loop
+    end: func {
+        _run? = false
+    }
+}
+
+
+// This depends on issue nddrylliog/rock#711
+extend Int {
+    percent: Float {
+        get {
+            this / 100
+        }
     }
 }
