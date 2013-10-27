@@ -9,7 +9,7 @@ Sparrow: class {
     painter := static Painter new()
     style := static Style platformDefault()
 
-    _run? := true
+    _run? := static true
 
     init: static func(args: ArrayList<String>) {
         // Nothing to do with args here for now

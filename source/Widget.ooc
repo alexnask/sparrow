@@ -7,8 +7,11 @@ Widget: abstract class {
 
     width, height: Int
     percentageWidth, percentageHeight: Float
-    x, y: Int
     absoluteSize? := true
+
+    x, y: Int
+    percentageX, percentageY: Float
+    absolutePosition? := true
 
     // The widget's personal style!
     style: Style = null
@@ -31,13 +34,27 @@ Widget: abstract class {
     }
 
     getPosition: func -> (Int, Int) {
-        (x, y)
+        if(absolutePosition?) return(x, y)
+        else if(parent) {
+            (pWidth, pHeight) := parent getSize()
+            return (pWidth * percentageX, pHeight * percentageY)
+        }
+        (-1, -1)
     }
 
-    setPosition: func(=x, =y) {
+    setPosition: func~abs (=x, =y) {
+        absolutePosition? = true
         ev := RepositionEvent new(x, y)
         signal("repositioned", ev)
         // Children don't need to know about this
+    }
+
+    setPosition: func~rel (=percentageX, =percentageY) {
+        absolutePosition? = false
+
+        (x, y) := getPosition()
+        ev := RepositionEvent new(x, y)
+        signal("repositioned", ev)
     }
 
     setSize: func~abs (=width, =height) {
