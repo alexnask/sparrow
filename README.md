@@ -105,3 +105,5 @@ main: func(args: ArrayList<String>) -> Int {
     Sparrow loop()
 }
 ```
+
+__NOTE THAT ALL CODE SEEN AT THIS STAGE IS JUST A PERSONAL EXPERIMENT, WILL UPDATE WITH A MORE INSPIRED SYSTEM AS I GO ON__

@@ -5,6 +5,8 @@ Widget: abstract class {
     _callbacks := MultiMap<String, Func(Event)> new()
     parent: This
 
+    ctxMenu: This
+
     width, height: Int
     percentageWidth, percentageHeight: Float
     absoluteSize? := true
@@ -98,6 +100,20 @@ Widget: abstract class {
         )
     }
 
+    // Clear onRightClick
+    onRightClick: func(action: Func) {
+        callback("rightClicked", |e|
+            action
+        )
+    }
+
+    // onRightClick with coordinates
+    onRightClick: func(action: Func(Int, Int)) {
+        callback("rightClicked", |e|
+            action(e as ClickEvent x, e as ClickEvent y)
+        )
+    }
+
     onKeyPress: func(action: Func(KeyCode)) {
         callback("keyPressed", |e|
             action(e as KeyPressEvent code)
@@ -108,13 +124,18 @@ Widget: abstract class {
     // Should I start the callbacks in different threads?
     // It might be overkill since signals are genrally sent inside the event loop
     // If you need to do a data heavy operation, start a thread yourself
-    signal: func(name: String, event: Event) {
+    signal: func(name: String, event: Event) -> Bool {
+        captured? := false
         cbs := _callbacks[name]
         if(cbs && cbs instanceOf?(List)) for(cb in cbs) {
             cb(event)
+            captured? = true
         } else if(cbs) {
             cbs(event)
+            captured? = true
         }
+
+        captured?
     }
 
     // This should be implemented but implementations should call super()
@@ -129,7 +150,24 @@ Widget: abstract class {
         child signal("gotParent", ev)
     }
 
+    addContextMenu: func(=ctxMenu) {
+        ev := WidgetEvent new(ctxMenu)
+        signal("menuAdded", ev)
+
+        onRightClick(|posX, posY|
+            ctxMenu setPosition(posX, posY)
+            ctxMenu show()
+            ctxMenu getFocus()
+        )
+
+        ctxMenu callback("unfocused", |e|
+            ctxMenu hide()
+        )
+    }
+
     getChildren: abstract func -> List<This>
+
+    getNextChild: abstract func(child: This) -> This
 
     show: func {
     	shown? = true
@@ -137,6 +175,14 @@ Widget: abstract class {
 
     hide: func {
     	shown? = false
+    }
+
+    enable: func {
+        enabled? = true
+    }
+
+    disable: func {
+        enabled? = false
     }
 
     close: func {
